@@ -391,7 +391,20 @@ function submitOrder(){
   if(!name || !phone || !type || !brief){ alert('Please fill in all required fields.'); return; }
 
   const msg = `🎨 *NEW ORDER – SAMOLU*\n\n👤 *Name:* ${name}\n📞 *Phone:* ${phone}\n🖌️ *Type:* ${type}\n🏷️ *Niche:* ${niche || 'Not specified'}\n\n📝 *Brief:*\n${brief}`;
-  const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+  const encoded = encodeURIComponent(msg);
+
+  // Detect device for best WhatsApp URL
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
+  let waUrl;
+  if(isIOS){
+    waUrl = `https://api.whatsapp.com/send?phone=${WA_NUMBER}&text=${encoded}`;
+  } else if(isMobile){
+    waUrl = `intent://send?phone=${WA_NUMBER}&text=${encoded}#Intent;scheme=whatsapp;package=com.whatsapp;end`;
+  } else {
+    waUrl = `https://web.whatsapp.com/send?phone=${WA_NUMBER}&text=${encoded}`;
+  }
 
   document.getElementById('ord-name').value = '';
   document.getElementById('ord-phone').value = '';
@@ -401,7 +414,20 @@ function submitOrder(){
 
   const ok = document.getElementById('ordOk');
   ok.style.display = 'block';
-  ok.style.display = 'none'; window.location.href = url;
+  setTimeout(() => ok.style.display = 'none', 4000);
+
+  // Fallback: if intent doesn't work on Android, fall back to wa.me
+  if(isMobile && !isIOS){
+    try {
+      window.location.href = waUrl;
+      setTimeout(() => { window.location.href = `https://wa.me/${WA_NUMBER}?text=${encoded}`; }, 2000);
+    } catch(e){
+      window.open(`https://wa.me/${WA_NUMBER}?text=${encoded}`, '_blank');
+    }
+  } else {
+    window.open(waUrl, '_blank');
+  }
+}
 
 // ── LOGIN ──
 function openLoginModal(){ document.getElementById('loginOverlay').classList.add('open'); document.getElementById('loginPwd').focus(); }

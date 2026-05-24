@@ -401,8 +401,7 @@ function submitOrder(){
 
   const ok = document.getElementById('ordOk');
   ok.style.display = 'block';
-  setTimeout(() => { ok.style.display = 'none'; window.open(url, '_blank'); }, 1000);
-}
+  ok.style.display = 'none'; window.location.href = url;
 
 // ── LOGIN ──
 function openLoginModal(){ document.getElementById('loginOverlay').classList.add('open'); document.getElementById('loginPwd').focus(); }

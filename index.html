@@ -139,7 +139,6 @@ footer{background:#05050f;padding:40px 5%;display:flex;align-items:center;justif
 <button class="btn-admin-nav" onclick="openLoginModal()">Admin</button>
 </div>
 </nav>
-
 <section class="hero">
 <div class="hero-bg-text">SAMOLU</div>
 <div class="hero-content">
@@ -152,9 +151,7 @@ footer{background:#05050f;padding:40px 5%;display:flex;align-items:center;justif
 </div>
 </div>
 </section>
-
 <div class="strip"><div class="strip-inner"><em>LOGO DESIGN</em>⬥<em>FLYERS</em>⬥<em>BRANDING</em>⬥<em>BANNERS</em>⬥<em>MERCH</em>⬥<em>SOCIAL MEDIA</em>⬥<em>BUSINESS CARDS</em>⬥<em>LOGO DESIGN</em>⬥<em>FLYERS</em>⬥<em>BRANDING</em>⬥<em>BANNERS</em>⬥<em>MERCH</em>⬥<em>SOCIAL MEDIA</em>⬥<em>BUSINESS CARDS</em>⬥</div></div>
-
 <section id="portfolio">
 <div class="sec-label">Portfolio</div>
 <div class="sec-title">My Work</div>
@@ -169,7 +166,6 @@ footer{background:#05050f;padding:40px 5%;display:flex;align-items:center;justif
 </div>
 <div class="portfolio-grid" id="portfolioGrid"></div>
 </section>
-
 <section id="reviews">
 <div class="sec-label">Testimonials</div>
 <div class="sec-title">Client Reviews</div>
@@ -188,7 +184,6 @@ footer{background:#05050f;padding:40px 5%;display:flex;align-items:center;justif
 <div class="success-msg" id="revOk">✓ Review submitted! Thank you.</div>
 </div>
 </section>
-
 <section id="order">
 <div class="sec-label">Get Started</div>
 <div class="sec-title">Place an Order</div>
@@ -217,10 +212,9 @@ footer{background:#05050f;padding:40px 5%;display:flex;align-items:center;justif
 </div>
 <div class="field"><label>Project Brief *</label><textarea id="ord-brief" placeholder="Describe your project, colors, style, references..."></textarea></div>
 <button class="btn-primary" onclick="submitOrder()">Send Order via WhatsApp</button>
-<div class="success-msg" id="ordOk">✓ Redirecting to WhatsApp...</div>
+<div class="success-msg" id="ordOk">✓ Opening WhatsApp...</div>
 </div>
 </section>
-
 <footer>
 <a class="samolu-logo" href="#">
 <div class="logo-icon"></div>
@@ -233,8 +227,6 @@ footer{background:#05050f;padding:40px 5%;display:flex;align-items:center;justif
 </ul>
 <p class="foot-copy">© 2025 SAMOLU. All rights reserved.</p>
 </footer>
-
-<!-- LOGIN MODAL -->
 <div class="overlay" id="loginOverlay">
 <div class="modal">
 <h3>Admin Login</h3>
@@ -247,8 +239,6 @@ footer{background:#05050f;padding:40px 5%;display:flex;align-items:center;justif
 </div>
 </div>
 </div>
-
-<!-- UPLOAD MODAL -->
 <div class="overlay" id="uploadOverlay">
 <div class="modal">
 <h3>Upload Design</h3>
@@ -276,8 +266,6 @@ footer{background:#05050f;padding:40px 5%;display:flex;align-items:center;justif
 </div>
 </div>
 </div>
-
-<!-- ADMIN PANEL -->
 <div class="admin-panel" id="adminPanel">
 <div class="admin-header">
 <a class="samolu-logo" href="#"><div class="logo-icon"></div><div class="logo-text-wrap"><span>SAMOLU<span class="logo-sub">ADMIN</span></span></div></a>
@@ -297,273 +285,112 @@ footer{background:#05050f;padding:40px 5%;display:flex;align-items:center;justif
 </div>
 <div class="admin-section" id="tab-reviews"><div id="adminRevList"></div></div>
 <div class="admin-section" id="tab-orders">
-<p style="color:rgba(255,255,255,.4);font-size:.82rem;margin-bottom:16px;">Orders are sent directly to your WhatsApp. Check your phone.</p>
+<p style="color:rgba(255,255,255,.4);font-size:.82rem;margin-bottom:16px;">Orders are sent directly to your WhatsApp.</p>
 <div id="adminOrderList"></div>
 </div>
 </div>
-
 <script>
-// ── CONFIG ──
-const PASS = 'samolu2025';
-const CLOUD_NAME = 'driuee4uq';
-const UPLOAD_PRESET = 'samolu_portfolio'; // You'll create this in Cloudinary dashboard
-const WA_NUMBER = '2348078755654';
-
-// ── STATE (saved in localStorage so it persists) ──
-let designs = JSON.parse(localStorage.getItem('samolu_designs') || '[]');
-let reviews = JSON.parse(localStorage.getItem('samolu_reviews') || '[]');
-let starVal = 0;
-
-function saveDesigns(){ localStorage.setItem('samolu_designs', JSON.stringify(designs)); }
-function saveReviews(){ localStorage.setItem('samolu_reviews', JSON.stringify(reviews)); }
-
-// ── PORTFOLIO ──
+const PASS='samolu2025';
+const CLOUD_NAME='driuee4uq';
+const UPLOAD_PRESET='samolu_portfolio';
+const WA_NUMBER='2348078755654';
+let designs=JSON.parse(localStorage.getItem('samolu_designs')||'[]');
+let reviews=JSON.parse(localStorage.getItem('samolu_reviews')||'[]');
+let starVal=0;
+function saveDesigns(){localStorage.setItem('samolu_designs',JSON.stringify(designs));}
+function saveReviews(){localStorage.setItem('samolu_reviews',JSON.stringify(reviews));}
 function renderPortfolio(filter='all'){
-  const grid = document.getElementById('portfolioGrid');
-  const filtered = filter === 'all' ? designs : designs.filter(d => d.niche === filter);
-  if(!filtered.length){
-    grid.innerHTML = `<div class="empty-state"><svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 16l4-4 4 4 4-6 4 6"/></svg><p>No designs yet</p><small>Login to admin panel to upload your work</small></div>`;
-    return;
-  }
-  grid.innerHTML = '';
-  filtered.forEach(d => {
-    const c = document.createElement('div');
-    c.className = 'design-card';
-    c.innerHTML = `<div class="card-img"><img src="${d.img}" alt="${d.title}" loading="lazy"/></div><div class="card-info"><div class="card-title">${d.title}</div><div class="card-niche">${d.niche}</div></div>`;
-    grid.appendChild(c);
-  });
+const grid=document.getElementById('portfolioGrid');
+const filtered=filter==='all'?designs:designs.filter(d=>d.niche===filter);
+if(!filtered.length){grid.innerHTML=`<div class="empty-state"><svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 16l4-4 4 4 4-6 4 6"/></svg><p>No designs yet</p><small>Login to admin panel to upload your work</small></div>`;return;}
+grid.innerHTML='';
+filtered.forEach(d=>{const c=document.createElement('div');c.className='design-card';c.innerHTML=`<div class="card-img"><img src="${d.img}" alt="${d.title}" loading="lazy"/></div><div class="card-info"><div class="card-title">${d.title}</div><div class="card-niche">${d.niche}</div></div>`;grid.appendChild(c);});
 }
-
-function filterPortfolio(f, el){
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  renderPortfolio(f);
-}
-
-// ── REVIEWS ──
+function filterPortfolio(f,el){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderPortfolio(f);}
 function renderReviews(){
-  const grid = document.getElementById('reviewsGrid');
-  if(!reviews.length){
-    grid.innerHTML = `<div style="color:rgba(255,255,255,.3);font-size:.88rem;padding:20px 0;">No reviews yet. Be the first!</div>`;
-    return;
-  }
-  grid.innerHTML = '';
-  reviews.forEach(r => {
-    const c = document.createElement('div');
-    c.className = 'review-card';
-    const stars = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
-    c.innerHTML = `<div class="stars">${stars}</div><p class="review-text">${r.text}</p><div class="reviewer"><div class="avatar">${r.name.charAt(0).toUpperCase()}</div><div><div class="rev-name">${r.name}</div><div class="rev-role">${r.role||''}</div></div></div>`;
-    grid.appendChild(c);
-  });
+const grid=document.getElementById('reviewsGrid');
+if(!reviews.length){grid.innerHTML=`<div style="color:rgba(255,255,255,.3);font-size:.88rem;padding:20px 0;">No reviews yet. Be the first!</div>`;return;}
+grid.innerHTML='';
+reviews.forEach(r=>{const c=document.createElement('div');c.className='review-card';const stars='★'.repeat(r.stars)+'☆'.repeat(5-r.stars);c.innerHTML=`<div class="stars">${stars}</div><p class="review-text">${r.text}</p><div class="reviewer"><div class="avatar">${r.name.charAt(0).toUpperCase()}</div><div><div class="rev-name">${r.name}</div><div class="rev-role">${r.role||''}</div></div></div>`;grid.appendChild(c);});
 }
-
-function setStar(n){
-  starVal = n;
-  document.querySelectorAll('#starPick span').forEach((s,i) => {
-    s.style.color = i < n ? 'var(--yellow)' : 'rgba(255,255,255,.2)';
-  });
-}
-
+function setStar(n){starVal=n;document.querySelectorAll('#starPick span').forEach((s,i)=>{s.style.color=i<n?'var(--yellow)':'rgba(255,255,255,.2)';});}
 function submitReview(){
-  const name = document.getElementById('rev-name').value.trim();
-  const text = document.getElementById('rev-text').value.trim();
-  if(!name || !text || !starVal){ alert('Please fill in all fields and select a rating.'); return; }
-  reviews.push({ name, role: document.getElementById('rev-role').value.trim(), text, stars: starVal });
-  saveReviews();
-  renderReviews(); renderAdminReviews();
-  document.getElementById('rev-name').value = '';
-  document.getElementById('rev-role').value = '';
-  document.getElementById('rev-text').value = '';
-  starVal = 0;
-  document.querySelectorAll('#starPick span').forEach(s => s.style.color = 'rgba(255,255,255,.2)');
-  const ok = document.getElementById('revOk');
-  ok.style.display = 'block';
-  setTimeout(() => ok.style.display = 'none', 3500);
+const name=document.getElementById('rev-name').value.trim();
+const text=document.getElementById('rev-text').value.trim();
+if(!name||!text||!starVal){alert('Please fill in all fields and select a rating.');return;}
+reviews.push({name,role:document.getElementById('rev-role').value.trim(),text,stars:starVal});
+saveReviews();renderReviews();renderAdminReviews();
+document.getElementById('rev-name').value='';document.getElementById('rev-role').value='';document.getElementById('rev-text').value='';starVal=0;
+document.querySelectorAll('#starPick span').forEach(s=>s.style.color='rgba(255,255,255,.2)');
+const ok=document.getElementById('revOk');ok.style.display='block';setTimeout(()=>ok.style.display='none',3500);
 }
-
-// ── ORDER → WHATSAPP ──
 function submitOrder(){
-  const name = document.getElementById('ord-name').value.trim();
-  const phone = document.getElementById('ord-phone').value.trim();
-  const type = document.getElementById('ord-type').value;
-  const niche = document.getElementById('ord-niche').value;
-  const brief = document.getElementById('ord-brief').value.trim();
-  if(!name || !phone || !type || !brief){ alert('Please fill in all required fields.'); return; }
-
-  const msg = `🎨 *NEW ORDER – SAMOLU*\n\n👤 *Name:* ${name}\n📞 *Phone:* ${phone}\n🖌️ *Type:* ${type}\n🏷️ *Niche:* ${niche || 'Not specified'}\n\n📝 *Brief:*\n${brief}`;
-  const encoded = encodeURIComponent(msg);
-
-  // Detect device for best WhatsApp URL
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  
-  let waUrl;
-  if(isIOS){
-    waUrl = `https://api.whatsapp.com/send?phone=${WA_NUMBER}&text=${encoded}`;
-  } else if(isMobile){
-    waUrl = `intent://send?phone=${WA_NUMBER}&text=${encoded}#Intent;scheme=whatsapp;package=com.whatsapp;end`;
-  } else {
-    waUrl = `https://web.whatsapp.com/send?phone=${WA_NUMBER}&text=${encoded}`;
-  }
-
-  document.getElementById('ord-name').value = '';
-  document.getElementById('ord-phone').value = '';
-  document.getElementById('ord-type').value = '';
-  document.getElementById('ord-niche').value = '';
-  document.getElementById('ord-brief').value = '';
-
-  const ok = document.getElementById('ordOk');
-  ok.style.display = 'block';
-  setTimeout(() => ok.style.display = 'none', 4000);
-
-  // Fallback: if intent doesn't work on Android, fall back to wa.me
-  if(isMobile && !isIOS){
-    try {
-      window.location.href = waUrl;
-      setTimeout(() => { window.location.href = `https://wa.me/${WA_NUMBER}?text=${encoded}`; }, 2000);
-    } catch(e){
-      window.open(`https://wa.me/${WA_NUMBER}?text=${encoded}`, '_blank');
-    }
-  } else {
-    window.open(waUrl, '_blank');
-  }
+const name=document.getElementById('ord-name').value.trim();
+const phone=document.getElementById('ord-phone').value.trim();
+const type=document.getElementById('ord-type').value;
+const niche=document.getElementById('ord-niche').value;
+const brief=document.getElementById('ord-brief').value.trim();
+if(!name||!phone||!type||!brief){alert('Please fill in all required fields.');return;}
+const msg=`🎨 *NEW ORDER – SAMOLU*\n\n👤 *Name:* ${name}\n📞 *Phone:* ${phone}\n🖌️ *Type:* ${type}\n🏷️ *Niche:* ${niche||'Not specified'}\n\n📝 *Brief:*\n${brief}`;
+const encoded=encodeURIComponent(msg);
+const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+const isMobile=/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+let waUrl;
+if(isIOS){waUrl=`https://api.whatsapp.com/send?phone=${WA_NUMBER}&text=${encoded}`;}
+else if(isMobile){waUrl=`intent://send?phone=${WA_NUMBER}&text=${encoded}#Intent;scheme=whatsapp;package=com.whatsapp;end`;}
+else{waUrl=`https://web.whatsapp.com/send?phone=${WA_NUMBER}&text=${encoded}`;}
+document.getElementById('ord-name').value='';document.getElementById('ord-phone').value='';
+document.getElementById('ord-type').value='';document.getElementById('ord-niche').value='';document.getElementById('ord-brief').value='';
+const ok=document.getElementById('ordOk');ok.style.display='block';setTimeout(()=>ok.style.display='none',4000);
+if(isMobile&&!isIOS){
+window.location.href=waUrl;
+setTimeout(()=>{window.location.href=`https://wa.me/${WA_NUMBER}?text=${encoded}`;},2000);
+}else{window.open(waUrl,'_blank');}
 }
-
-// ── LOGIN ──
-function openLoginModal(){ document.getElementById('loginOverlay').classList.add('open'); document.getElementById('loginPwd').focus(); }
-function closeLogin(){ document.getElementById('loginOverlay').classList.remove('open'); document.getElementById('loginPwd').value = ''; document.getElementById('loginErr').style.display = 'none'; }
-function doLogin(){
-  const pwd = document.getElementById('loginPwd').value;
-  if(pwd === PASS){ closeLogin(); openAdmin(); }
-  else{ document.getElementById('loginErr').style.display = 'block'; document.getElementById('loginPwd').value = ''; document.getElementById('loginPwd').focus(); }
-}
-
-// ── ADMIN ──
-function openAdmin(){ document.getElementById('adminPanel').classList.add('open'); renderAdminDesigns(); renderAdminReviews(); }
-function closeAdmin(){ document.getElementById('adminPanel').classList.remove('open'); }
-function switchTab(id, el){
-  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('open'));
-  document.querySelectorAll('.atab').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('open');
-  el.classList.add('active');
-}
-
+function openLoginModal(){document.getElementById('loginOverlay').classList.add('open');document.getElementById('loginPwd').focus();}
+function closeLogin(){document.getElementById('loginOverlay').classList.remove('open');document.getElementById('loginPwd').value='';document.getElementById('loginErr').style.display='none';}
+function doLogin(){const pwd=document.getElementById('loginPwd').value;if(pwd===PASS){closeLogin();openAdmin();}else{document.getElementById('loginErr').style.display='block';document.getElementById('loginPwd').value='';document.getElementById('loginPwd').focus();}}
+function openAdmin(){document.getElementById('adminPanel').classList.add('open');renderAdminDesigns();renderAdminReviews();}
+function closeAdmin(){document.getElementById('adminPanel').classList.remove('open');}
+function switchTab(id,el){document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('open'));document.querySelectorAll('.atab').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).classList.add('open');el.classList.add('active');}
 function renderAdminDesigns(){
-  const grid = document.getElementById('adminDesignGrid');
-  if(!designs.length){ grid.innerHTML = `<div style="grid-column:1/-1;color:rgba(255,255,255,.35);font-size:.88rem;padding:30px 0;">No designs yet. Click "+ Upload Design" above.</div>`; return; }
-  grid.innerHTML = '';
-  designs.forEach((d, i) => {
-    const c = document.createElement('div');
-    c.className = 'admin-card';
-    c.innerHTML = `<div class="admin-card-img"><img src="${d.img}" alt="${d.title}" loading="lazy"/></div><div class="admin-card-body"><div class="admin-card-title">${d.title}</div><div class="admin-card-niche">${d.niche}</div><button class="btn-del" onclick="deleteDesign(${i})">Delete</button></div>`;
-    grid.appendChild(c);
-  });
+const grid=document.getElementById('adminDesignGrid');
+if(!designs.length){grid.innerHTML=`<div style="grid-column:1/-1;color:rgba(255,255,255,.35);font-size:.88rem;padding:30px 0;">No designs yet. Click "+ Upload Design" above.</div>`;return;}
+grid.innerHTML='';
+designs.forEach((d,i)=>{const c=document.createElement('div');c.className='admin-card';c.innerHTML=`<div class="admin-card-img"><img src="${d.img}" alt="${d.title}" loading="lazy"/></div><div class="admin-card-body"><div class="admin-card-title">${d.title}</div><div class="admin-card-niche">${d.niche}</div><button class="btn-del" onclick="deleteDesign(${i})">Delete</button></div>`;grid.appendChild(c);});
 }
-
-function deleteDesign(i){
-  if(!confirm('Delete this design?')) return;
-  designs.splice(i, 1);
-  saveDesigns();
-  renderAdminDesigns(); renderPortfolio();
-}
-
+function deleteDesign(i){if(!confirm('Delete this design?'))return;designs.splice(i,1);saveDesigns();renderAdminDesigns();renderPortfolio();}
 function renderAdminReviews(){
-  const list = document.getElementById('adminRevList');
-  if(!reviews.length){ list.innerHTML = `<div style="color:rgba(255,255,255,.35);font-size:.88rem;padding:20px 0;">No reviews yet.</div>`; return; }
-  list.innerHTML = '';
-  reviews.forEach((r, i) => {
-    const c = document.createElement('div');
-    c.className = 'admin-rev-card';
-    const stars = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
-    c.innerHTML = `<div class="admin-rev-info"><div class="admin-rev-name">${r.name} <span style="color:rgba(255,255,255,.4)">${r.role||''}</span></div><div class="admin-rev-stars">${stars}</div><div class="admin-rev-text">${r.text}</div></div><button class="btn-del" style="width:auto;white-space:nowrap" onclick="deleteReview(${i})">Delete</button>`;
-    list.appendChild(c);
-  });
+const list=document.getElementById('adminRevList');
+if(!reviews.length){list.innerHTML=`<div style="color:rgba(255,255,255,.35);font-size:.88rem;padding:20px 0;">No reviews yet.</div>`;return;}
+list.innerHTML='';
+reviews.forEach((r,i)=>{const c=document.createElement('div');c.className='admin-rev-card';const stars='★'.repeat(r.stars)+'☆'.repeat(5-r.stars);c.innerHTML=`<div class="admin-rev-info"><div class="admin-rev-name">${r.name} <span style="color:rgba(255,255,255,.4)">${r.role||''}</span></div><div class="admin-rev-stars">${stars}</div><div class="admin-rev-text">${r.text}</div></div><button class="btn-del" style="width:auto;white-space:nowrap" onclick="deleteReview(${i})">Delete</button>`;list.appendChild(c);});
 }
-
-function deleteReview(i){
-  if(!confirm('Delete this review?')) return;
-  reviews.splice(i, 1);
-  saveReviews();
-  renderAdminReviews(); renderReviews();
-}
-
-// ── CLOUDINARY UPLOAD ──
-function openUpload(){ document.getElementById('uploadOverlay').classList.add('open'); }
-function closeUpload(){
-  document.getElementById('uploadOverlay').classList.remove('open');
-  document.getElementById('up-title').value = '';
-  document.getElementById('up-preview').style.display = 'none';
-  document.getElementById('upFileName').textContent = 'Click to select image';
-  document.getElementById('up-file').value = '';
-  document.getElementById('upOk').style.display = 'none';
-  document.getElementById('uploadingMsg').style.display = 'none';
-}
-
-function previewFile(input){
-  const file = input.files[0];
-  if(!file) return;
-  document.getElementById('upFileName').textContent = file.name;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const prev = document.getElementById('up-preview');
-    prev.src = e.target.result;
-    prev.style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-}
-
+function deleteReview(i){if(!confirm('Delete this review?'))return;reviews.splice(i,1);saveReviews();renderAdminReviews();renderReviews();}
+function openUpload(){document.getElementById('uploadOverlay').classList.add('open');}
+function closeUpload(){document.getElementById('uploadOverlay').classList.remove('open');document.getElementById('up-title').value='';document.getElementById('up-preview').style.display='none';document.getElementById('upFileName').textContent='Click to select image';document.getElementById('up-file').value='';document.getElementById('upOk').style.display='none';document.getElementById('uploadingMsg').style.display='none';}
+function previewFile(input){const file=input.files[0];if(!file)return;document.getElementById('upFileName').textContent=file.name;const reader=new FileReader();reader.onload=e=>{const prev=document.getElementById('up-preview');prev.src=e.target.result;prev.style.display='block';};reader.readAsDataURL(file);}
 async function addDesign(){
-  const title = document.getElementById('up-title').value.trim();
-  const niche = document.getElementById('up-niche').value;
-  const file = document.getElementById('up-file').files[0];
-  if(!title){ alert('Please enter a title.'); return; }
-  if(!file){ alert('Please select an image.'); return; }
-
-  // Show uploading state
-  document.getElementById('uploadingMsg').style.display = 'block';
-  document.getElementById('upOk').style.display = 'none';
-
-  try {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', UPLOAD_PRESET);
-    formData.append('folder', 'samolu');
-
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-      method: 'POST',
-      body: formData
-    });
-    const data = await res.json();
-
-    if(data.secure_url){
-      designs.unshift({ title, niche, img: data.secure_url });
-      saveDesigns();
-      renderPortfolio(); renderAdminDesigns();
-      document.getElementById('uploadingMsg').style.display = 'none';
-      document.getElementById('upOk').style.display = 'block';
-      setTimeout(() => closeUpload(), 1500);
-    } else {
-      document.getElementById('uploadingMsg').style.display = 'none';
-      alert('Upload failed. Please check your Cloudinary upload preset is set to "Unsigned".');
-    }
-  } catch(err){
-    document.getElementById('uploadingMsg').style.display = 'none';
-    alert('Upload error. Check your internet connection.');
-  }
+const title=document.getElementById('up-title').value.trim();
+const niche=document.getElementById('up-niche').value;
+const file=document.getElementById('up-file').files[0];
+if(!title){alert('Please enter a title.');return;}
+if(!file){alert('Please select an image.');return;}
+document.getElementById('uploadingMsg').style.display='block';
+document.getElementById('upOk').style.display='none';
+try{
+const formData=new FormData();
+formData.append('file',file);
+formData.append('upload_preset',UPLOAD_PRESET);
+formData.append('folder','samolu');
+const res=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,{method:'POST',body:formData});
+const data=await res.json();
+if(data.secure_url){designs.unshift({title,niche,img:data.secure_url});saveDesigns();renderPortfolio();renderAdminDesigns();document.getElementById('uploadingMsg').style.display='none';document.getElementById('upOk').style.display='block';setTimeout(()=>closeUpload(),1500);}
+else{document.getElementById('uploadingMsg').style.display='none';alert('Upload failed. Make sure your Cloudinary preset is set to Unsigned.');}
+}catch(err){document.getElementById('uploadingMsg').style.display='none';alert('Upload error. Check your internet connection.');}
 }
-
-// Close overlays on background click
-['loginOverlay','uploadOverlay'].forEach(id => {
-  document.getElementById(id).addEventListener('click', e => {
-    if(e.target === document.getElementById(id)){
-      if(id === 'loginOverlay') closeLogin(); else closeUpload();
-    }
-  });
-});
-
-// Init
-renderPortfolio();
-renderReviews();
+['loginOverlay','uploadOverlay'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id)){if(id==='loginOverlay')closeLogin();else closeUpload();}});});
+renderPortfolio();renderReviews();
 </script>
 </body>
 </html>
